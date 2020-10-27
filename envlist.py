@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 #!/data/miniconda3/envs/env1/bin/python
+=======
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 22 13:22:38 2020
+
+@author: Hari
+"""
+>>>>>>> 50be86f483a612b864402c851e159c53795b6563
 
 from filelock import FileLock
 import hickle
@@ -40,11 +49,19 @@ lock = FileLock(lock_path, timeout=time_out_secs)
 
 with lock:
     if pmode == RESET_MODE:
+<<<<<<< HEAD
         # create a list (named clist) of nevns environments with the
         # prefix envprefix
         # add code here
         clist = []
         for num in range(int(nenvs)):
+=======
+        # create a list (named clist) of nevns environments with the 
+        # prefix envprefix
+        # add code here
+        clist = []
+        for num in range(nenvs):
+>>>>>>> 50be86f483a612b864402c851e159c53795b6563
             clist.append(str(envprefix) + str(num))
     else:
         # load hickle file
