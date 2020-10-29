@@ -66,7 +66,7 @@ class Waveform(DPT.DPObject):
         self.array_dict = dict()
         self.array_dict[aname] = 0
         self.numSets = 1
-        self.current_plot_type = None
+        self.current_plot_type = None #hari
 
     def append(self, wf):
         # this function will be called by processDirs to append the values of certain fields
