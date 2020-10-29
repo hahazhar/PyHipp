@@ -73,9 +73,9 @@ class Waveform(DPT.DPObject):
         # It is useful to store the information of the objects for panning through in the future
         DPT.DPObject.append(self, wf)  # append self.setidx and self.dirs
         self.data = self.data + wf.data
-#        for ar in wf.array_dict:
-#            self.array_dict[ar] = self.numSets
-#        self.numSets += 1
+        for ar in wf.array_dict:
+            self.array_dict[ar] = self.numSets
+        self.numSets += 1
         
     def plot(self, i = None, ax = None, getNumEvents = False, getLevels = False,\
              getPlotOpts = False, overlay = False, **kwargs):
