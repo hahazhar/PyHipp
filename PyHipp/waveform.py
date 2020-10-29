@@ -77,6 +77,7 @@ class Waveform(DPT.DPObject):
             self.array_dict[ar] = self.numSets
         self.numSets += 1
         
+        
     def plot(self, i = None, ax = None, getNumEvents = False, getLevels = False,\
              getPlotOpts = False, overlay = False, **kwargs):
         # this function will be called in different instances in PanGUI.main
