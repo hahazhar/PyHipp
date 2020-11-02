@@ -45,11 +45,12 @@ class Waveform(DPT.DPObject):
         # 'channelxxx, xxx is the number of the channel'
         pwd = os.path.normpath(os.getcwd())
         
+        # get array name
         aname = DPT.levels.normpath(os.path.dirname(pwd))
         
         self.array_dict = dict()
-        self.array_dict[aname] = 0
-        self.numSets = 1
+        self.array_dict[aname] = 0 # Dictionary to hold the array values
+        self.numSets = 1 # Storing number of sets
         self.current_plot_type = None 
         
         self.channel_filename = [os.path.basename(pwd)]
@@ -120,24 +121,30 @@ class Waveform(DPT.DPObject):
             # this will be called by PanGUI.main to return two values: 
             # first value is the total number of items to pan through, 
             # second value is the current index of the item to plot
-            if self.current_plot_type == plot_type:
+            if self.current_plot_type == plot_type: # no changes to current plot type
                 if plot_type == 'Channel':
-                    return self.numSets, i # please return two items here: <total-number-of-items-to-plot>, <current-item-index-to-plot>
+                    return self.numSets,i # please return two items here: <total-number-of-items-to-plot>, <current-item-index-to-plot>
                 elif plot_type == 'Array':
-                    return len(self.array_dict), i
+                    return len(self.array_dict),i
                 
             elif self.current_plot_type == 'Array' and plot_type == 'Channel':  # change from array to channel
                 # add code to return number of channels and the appropriate
                 # channel number if the current array number is i
-                self.current_plot_type = 'Channel'
-                return self.numSets, i
+                
+                if i == 0:
+                    return self.numSets, 0
+                else:
+                    advals = np.array([*self.array_dict.values()])
+                    return self.numSets, advals[i-1]+1
 
             
             elif self.current_plot_type == 'Channel' and plot_type == 'Array': # change from channel to array
                 # add code to return number of arrays and the appropriate
                 # array number if the current channel number is i
                 self.current_plot_type = 'Array'
-                return len(self.array_dict), i
+                advals = np.array([*self.array_dict.values()])
+                vi = (advals >= i).nonzero()
+                return len(self.array_dict), vi[0][0]
              
                   
         if ax is None:
@@ -155,29 +162,38 @@ class Waveform(DPT.DPObject):
             if self.current_plot_type == 'Array':
                 self.remove_subplots(fig)
                 ax = fig.add_subplot(1,1,1)
-                self.plot_data(i, ax, plotOpts, 1)
+            
+            self.plot_data(i, ax, plotOpts, 1)
                 
-                self.current_plot_type = 'Channel' # is this line necessary step 57 don't have
+            self.current_plot_type = 'Channel' # is this line necessary step 57 don't have
                 
         elif plot_type == 'Array':
             self.remove_subplots(fig)
-            advals = np.array([*self.array_dict.values()])
+            advals = np.array([*self.array_dict.values()]) # get values in array_dict
             # set the starting index cstart for array i
             # set the ending index cend for array i
         
             if(i == 0):
-                currch = 0
+                cstart = 0
+                cend = advals[0]
             else:
-                currch = advals[i-1] + 1
+                cstart = advals[i-1] + 1
+                cend = advals[i]
                 
-            while currch <= advals[i]:
+            currch = cstart
+            # Turning off the Labels and Titles off
+            plotOpts['LabelsOff'] = True
+            plotOpts['TitleOff'] = True
+            
+            while currch <= cend:
                 # get channel name
                 currchname = self.dirs[currch]
                 # get axis position for channel
                 ax, isCorner = getChannelInArray(currchname, fig)
                 self.plot_data(currch, ax, plotOpts, isCorner)
                 currch += 1
-        
+                
+            self.current_plot_type = 'Array'
     
     
     def plot_data(self, i, ax, plotOpts, isCorner):
@@ -185,7 +201,7 @@ class Waveform(DPT.DPObject):
         x = np.arange(y.shape[0])
         ax.plot(x, y)
         
-        if not plotOpts['TitleOff']:
+        if (not plotOpts['TitleOff']):
             ax.set_title(self.dirs[i])
 
         if (not plotOpts['LabelsOff']) or isCorner:
